@@ -1,11 +1,12 @@
 //Import  the required AWS Cognito SDK 
 
 const { CognitoIdentityProviderClient, SignUpCommand } = require('@aws-sdk/client-cognito-identity-provider');
+const UserModel = require('../models/userModel');
 
 //Initialize Cognito client with specified AWS region
 
 const client = new CognitoIdentityProviderClient({
-    region: process.env.REGION,//Specify your AWS region
+    region: 'ap-south-1',//Specify your AWS region
 });
 
 //Define Cognito App Client ID for user pool authentication
@@ -35,6 +36,9 @@ exports.signUp = async (event) => {
         const command = new SignUpCommand(params);
         //Execute the sign-up request
         await client.send(command);
+
+        const newUser = new UserModel(email, fullName);
+        await newUser.save();
 
         //Return success reponse to the client
 
