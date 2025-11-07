@@ -6,10 +6,29 @@ service: authService
 provider:
   name: aws
   runtime: nodejs22.x
-  # region: ap-south-1
+  region: ap-south-1
   environment:
     CLIENT_ID: ${ssm:/CLIENT_ID}
-    REGION: ap-south-1 # Instead of region declaration above the environment section, we can declare region here as well and use process.env.REGION on everwhere.
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:PutItem
+      Resource:
+        - arn:aws:dynamodb:ap-south-1:245362991910:table/Users
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Users # name of the table where users will be stored
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S # S = String
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH # HASH = Partition Key
+        BillingMode: PAY_PER_REQUEST # Automatically scales read/write capacity based on demand
 
 functions:
   hello:
