@@ -6,9 +6,10 @@ service: authService
 provider:
   name: aws
   runtime: nodejs22.x
-  region: ap-south-1
+  # region: ap-south-1
   environment:
     CLIENT_ID: ${ssm:/CLIENT_ID}
+    REGION: ap-south-1 # Instead of region declaration above the environment section, we can declare region here as well and use process.env.REGION on everwhere.
 
 functions:
   hello:

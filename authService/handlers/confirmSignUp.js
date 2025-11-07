@@ -1,7 +1,7 @@
 const { CognitoIdentityProviderClient, ConfirmSignUpCommand } = require("@aws-sdk/client-cognito-identity-provider");
 
 const client = new CognitoIdentityProviderClient({
-    region: 'ap-south-1',//Specify your AWS region
+    region: process.env.REGION,//Specify your AWS region
 });
 
 const CLIENT_ID = process.env.CLIENT_ID;

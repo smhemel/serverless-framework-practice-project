@@ -5,7 +5,7 @@ const { CognitoIdentityProviderClient, SignUpCommand } = require('@aws-sdk/clien
 //Initialize Cognito client with specified AWS region
 
 const client = new CognitoIdentityProviderClient({
-    region: 'ap-south-1',//Specify your AWS region
+    region: process.env.REGION,//Specify your AWS region
 });
 
 //Define Cognito App Client ID for user pool authentication
