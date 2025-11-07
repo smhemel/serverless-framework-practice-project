@@ -10,7 +10,7 @@ const client = new CognitoIdentityProviderClient({
 
 //Define Cognito App Client ID for user pool authentication
 
-const CLIENT_ID = "40t596ot83gjo66aupnpgrghl6";
+const CLIENT_ID = process.env.CLIENT_ID;
 
 //Exported sign-up function to handle new user registration
 
@@ -40,7 +40,7 @@ exports.signUp = async (event) => {
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ msg: "User successfully signed up!" }),
+            body: JSON.stringify({ msg: "Account created successfully. Please enter the oTP that was sent to your email" }),
         };
     } catch (error) {
         return {
