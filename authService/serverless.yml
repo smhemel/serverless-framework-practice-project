@@ -19,11 +19,17 @@ functions:
     handler: handlers/signUp.signUp
     events:
       - httpApi:
-          path: /signUp
+          path: /signup
           method: post
   confirmSignUp:
     handler: handlers/confirmSignUp.confirmSignUp
     events:
       - httpApi:
           path: /confirm-signup
+          method: post
+  signIn:
+    handler: handlers/signIn.signIn
+    events:
+      - httpApi:
+          path: /signin
           method: post
