@@ -7,6 +7,20 @@ provider:
   name: aws
   runtime: nodejs22.x
   region: ap-south-1
+  environment:
+    BUCKET_NAME: products-images-bucket-smhemel-dev
+    DYNAMODB_TABLE: Products
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:PutItem"
+      Resource:
+        - "arn:aws:dynamodb:ap-south-1:245362991910:table/Products"
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource:
+        - "arn:aws:s3:::products-images-bucket-smhemel-dev/*"
 
 resources:
   Resources:
@@ -27,9 +41,9 @@ resources:
         BillingMode: PAY_PER_REQUEST
 
 functions:
-  hello:
-    handler: handler.hello
+  getUploadUrl:
+    handler: handlers/getUploadUrl.getUploadUrl
     events:
       - httpApi:
-          path: /
-          method: get
+          path: /upload-url
+          method: post
