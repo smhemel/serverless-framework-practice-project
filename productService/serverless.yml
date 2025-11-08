@@ -10,10 +10,13 @@ provider:
   environment:
     BUCKET_NAME: products-images-bucket-smhemel-dev
     DYNAMODB_TABLE: Products
+    SNS_TOPIC_ARN: arn:aws:sns:ap-south-1:245362991910:ProductCleanupTopic
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:Scan"
       Resource:
         - "arn:aws:dynamodb:ap-south-1:245362991910:table/Products"
     - Effect: "Allow"
@@ -39,6 +42,16 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    ProductCleanupTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ProductCleanupTopic
+    ProductCleanupSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: arn:aws:sns:ap-south-1:245362991910:ProductCleanupTopic
+        Protocol: email
+        Endpoint: smhemel.eu@gmail.com
 
 functions:
   getUploadUrl:
@@ -47,3 +60,16 @@ functions:
       - httpApi:
           path: /upload-url
           method: post
+  updateProductImage:
+    handler: handlers/updateProductImage.updateProductImage
+    events:
+      - S3:
+          bucket: products-images-bucket-smhemel-dev
+          event: s3:ObjectCreated:Put
+          existing: true
+  cleanupProducts:
+    handler: handlers/cleanupProducts.cleanupProducts
+    events:
+      - schedule:
+          rate: rate(2 minutes)
+          enabled: true
