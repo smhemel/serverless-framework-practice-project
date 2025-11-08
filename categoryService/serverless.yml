@@ -10,6 +10,7 @@ provider:
   environment:
     BUCKET_NAME: category-images-bucket-smhemel-dev
     DYNAMODB_TABLE: Categories
+    SNS_TOPIC_ARN: arn:aws:sns:ap-south-1:245362991910:CategoryCleanupTopic
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -24,6 +25,11 @@ provider:
         - "dynamodb:DeleteItem"
       Resource:
         - "arn:aws:dynamodb:ap-south-1:245362991910:table/Categories"
+    - Effect: "Allow"
+      Action:
+        - "sns:Publish"
+      Resource:
+        - "arn:aws:sns:ap-south-1:245362991910:CategoryCleanupTopic"
 
 resources:
   Resources:
@@ -42,6 +48,16 @@ resources:
           - AttributeName: fileName
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    CategoryCleanupTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: CategoryCleanupTopic
+    CategoryCleanupSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: arn:aws:sns:ap-south-1:245362991910:CategoryCleanupTopic
+        Protocol: email
+        Endpoint: smhemel.eu@gmail.com
 
 functions:
   getUploadUrl:
