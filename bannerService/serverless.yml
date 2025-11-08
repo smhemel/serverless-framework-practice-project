@@ -9,6 +9,12 @@ provider:
   region: ap-south-1
   environment:
     BUCKET_NAME: banner-images-bucket-smhemel-dev
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource:
+        - "arn:aws:s3:::banner-images-bucket-smhemel-dev/*"
 
 resources:
   Resources:
@@ -18,9 +24,9 @@ resources:
         BucketName: banner-images-bucket-smhemel-dev
 
 functions:
-  hello:
-    handler: handler.hello
+  uploadBanner:
+    handler: handlers/uploadBanner.getUploadUrl
     events:
       - httpApi:
-          path: /
-          method: get
+          path: /upload-banner
+          method: post
