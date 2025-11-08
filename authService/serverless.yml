@@ -31,12 +31,6 @@ resources:
         BillingMode: PAY_PER_REQUEST # Automatically scales read/write capacity based on demand
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   signUp:
     handler: handlers/signUp.signUp
     events:
