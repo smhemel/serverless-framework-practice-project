@@ -42,7 +42,7 @@ exports.cleanupProducts = async () => {
             //Create a delete command using the category's unique identiifier(fileName)
             const deleteItemCommand = new DeleteItemCommand({
                 TableName: tableName,
-                Key: { fileName: { S: item.fileName.S } }
+                Key: { id: { S: item.id.S } }
             });
 
             //Execute the delete operation
