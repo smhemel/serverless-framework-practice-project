@@ -1,4 +1,5 @@
 const { SQSClient, SendMessageCommand } = require('@aws-sdk/client-sqs');
+const { sendOrderEmail } = require('../services/sendEmail');
 const axios = require('axios');
 const crypto = require('crypto');
 
@@ -48,6 +49,8 @@ exports.placeOrder = async (event) => {
                 MessageBody: JSON.stringify(orderPayload),
             })
         );
+
+        await sendOrderEmail(email, orderId, product.name?.S || 'Unknown Product');
 
         return {
             statusCode: 201,

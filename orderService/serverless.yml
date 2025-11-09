@@ -17,9 +17,11 @@ provider:
         - "sqs:SendMessage"
         - 'sqs:ReceiveMessage'
         - 'sqs:DeleteMessage'
+        - 'ses:SendEmail'
       Resource:
         - Fn::GetAtt: [OrderTable, Arn]
         - Fn::GetAtt: [OrdersQueue, Arn]
+        - arn:aws:ses:ap-south-1:245362991910:identity/smhemel.eu@gmail.com
 
 resources:
   Resources:
@@ -38,6 +40,10 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: OrderQueue
+    OrderEmailIdentity:
+      Type: AWS::SES::EmailIdentity
+      Properties:
+        EmailIdentity: "smhemel.eu@gmail.com"
 
 functions:
   placeOrder:
