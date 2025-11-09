@@ -1,8 +1,8 @@
-const { DynamoDBClient, PutItemCommand } = require('@aws-sdk/client-dynamodb');
+const { SQSClient, SendMessageCommand } = require('@aws-sdk/client-sqs');
 const axios = require('axios');
 const crypto = require('crypto');
 
-const dynamoDbClient = new DynamoDBClient({ region: "ap-south-1" });
+const sqsClient = new SQSClient({ region: "ap-south-1" });
 
 exports.placeOrder = async (event) => {
     try {
@@ -13,7 +13,7 @@ exports.placeOrder = async (event) => {
                 body: JSON.stringify({ error: "All fields are required" }),
             };
         }
-        
+
         const productResponse = await axios.get('https://g8g6tgzwgg.execute-api.ap-south-1.amazonaws.com/approved-products');
         const approvedProducts = productResponse.data.products || [];
         const product = approvedProducts.find(p => p.id?.S === id);
@@ -34,18 +34,18 @@ exports.placeOrder = async (event) => {
 
         const orderId = crypto.randomUUID();
         const orderPayload = {
-            id: { S: orderId },
-            productId: { S: id },
-            quantity: { N: quantity.toString() },
-            email: { S: email },
-            status: { S: "pending" },
-            createdAt: { S: new Date().toISOString() },
+            id: orderId,
+            productId: id,
+            quantity,
+            email,
+            status: "pending",
+            createdAt: new Date().toISOString(),
         };
-
-        await dynamoDbClient.send(
-            new PutItemCommand({
-                TableName: process.env.DYNAMODB_TABLE,
-                Item: orderPayload,
+        //send Message to SQS
+        await sqsClient.send(
+            new SendMessageCommand({
+                QueueUrl: process.env.SQS_QUEUE_URL,
+                MessageBody: JSON.stringify(orderPayload),
             })
         );
 
@@ -62,4 +62,4 @@ exports.placeOrder = async (event) => {
             body: JSON.stringify({ error: error.message }),
         };
     }
-}
+};

@@ -9,12 +9,17 @@ provider:
   region: ap-south-1
   environment:
     DYNAMODB_TABLE: Orders
+    SQS_QUEUE_URL: https://sqs.ap-south-1.amazonaws.com/245362991910/OrderQueue
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "dynamodb:PutItem"
+        - "sqs:SendMessage"
+        - 'sqs:ReceiveMessage'
+        - 'sqs:DeleteMessage'
       Resource:
         - Fn::GetAtt: [OrderTable, Arn]
+        - Fn::GetAtt: [OrdersQueue, Arn]
 
 resources:
   Resources:
@@ -29,6 +34,10 @@ resources:
           - AttributeName: id
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    OrdersQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: OrderQueue
 
 functions:
   placeOrder:
@@ -37,3 +46,9 @@ functions:
       - httpApi:
           path: /place-order
           method: post
+  processOrder:
+    handler: handlers/processOrder.processOrder
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt: [OrdersQueue, Arn]
