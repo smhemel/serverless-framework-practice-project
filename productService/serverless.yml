@@ -75,6 +75,12 @@ functions:
           method: post
           authorizer:
             name: myCognitoAuth
+  getApprovedProducts:
+    handler: handlers/getApprovedProducts.getApprovedProducts
+    events:
+      - httpApi:
+          path: /approved-products
+          method: get
   updateProductImage:
     handler: handlers/updateProductImage.updateProductImage
     events:
